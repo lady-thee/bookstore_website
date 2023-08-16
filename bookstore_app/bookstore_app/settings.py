@@ -85,7 +85,7 @@ DATABASES = {
     # },
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ikenga_db',
+        'NAME': 'ikenga',
         'USER': 'postgres',
         'HOST': 'localhost',
         'PASSWORD': '2030',
