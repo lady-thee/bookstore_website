@@ -16,7 +16,10 @@ sell books and other users can buy, therefore easily connecting users to booksto
 ## Requirements:
 1. Django
 2. Django rest framework
-3. Psycopg
+3. Psycopg2-binary
+4. Pydantic
+5. Pydantic-settings
+6. Docker, Docker engine 
 
 # Database Schematics
 https://drawsql.app/teams/the-a-team-9/diagrams/bookstore-ikenga
