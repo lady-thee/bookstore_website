@@ -20,6 +20,7 @@ sell books and other users can buy, therefore easily connecting users to booksto
 4. Pydantic
 5. Pydantic-settings
 6. Docker, Docker engine 
+7. Pipenv (Virtual environment)
 
 # Database Schematics
 https://drawsql.app/teams/the-a-team-9/diagrams/bookstore-ikenga
