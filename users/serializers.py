@@ -42,4 +42,4 @@ class UserSerializer(serializers.ModelSerializer):
 #     "username": "theola"
 # }
 
-{"username_or_email": "theolam6@gmail.com", "password": "2030"}
+# {"username_or_email": "theolam6@gmail.com", "password": "2030"}
