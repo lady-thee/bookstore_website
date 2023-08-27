@@ -24,14 +24,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-<<<<<<< HEAD
-from typing import List
-
-import dj_database_url
-from pydantic import PostgresDsn
-from pydantic_settings import BaseSettings
-=======
->>>>>>> 3a1d8b8 (Feature: Added signup and login functionality)
 
 class GeneralSettings(BaseSettings):
     DEBUG: bool = False
@@ -57,38 +49,16 @@ ALLOWED_HOSTS = GENERAL_SETTINGS.ALLOWED_HOSTS
 # Application definition
 
 INSTALLED_APPS = [
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> d2e0dc0 (Feature: Added signup and login functionality)
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-<<<<<<< HEAD
-=======
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'users.apps.UsersConfig',
-
-    'rest_framework',
-    'rest_framework.authtoken',
-    'django_filters',
-
->>>>>>> 3a1d8b8 (Feature: Added signup and login functionality)
-=======
     "users.apps.UsersConfig",
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
->>>>>>> d2e0dc0 (Feature: Added signup and login functionality)
 ]
 
 MIDDLEWARE = [
@@ -101,9 +71,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-<<<<<<< HEAD
+
 ROOT_URLCONF = "config.urls"
-=======
+
 # Authentication Backends
 
 AUTHENTICATION_BACKENDS = (
@@ -139,12 +109,6 @@ REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "multipart",
 }
 
-<<<<<<< HEAD
-ROOT_URLCONF = 'config.urls'
->>>>>>> 3a1d8b8 (Feature: Added signup and login functionality)
-=======
-ROOT_URLCONF = "config.urls"
->>>>>>> d2e0dc0 (Feature: Added signup and login functionality)
 
 TEMPLATES = [
     {
