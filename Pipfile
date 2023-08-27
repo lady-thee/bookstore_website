@@ -12,6 +12,7 @@ pydantic = "*"
 pydantic-settings = "*"
 pillow = "*"
 six = "*"
+django-filter = "*"
 
 [dev-packages]
 

@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from typing import List
+
+import dj_database_url
+from pydantic import PostgresDsn
+from pydantic_settings import BaseSettings
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,11 +25,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+<<<<<<< HEAD
 from typing import List
 
 import dj_database_url
 from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings
+=======
+>>>>>>> 3a1d8b8 (Feature: Added signup and login functionality)
 
 
 class GeneralSettings(BaseSettings):
@@ -50,12 +59,28 @@ ALLOWED_HOSTS = GENERAL_SETTINGS.ALLOWED_HOSTS
 # Application definition
 
 INSTALLED_APPS = [
+<<<<<<< HEAD
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+=======
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    'users.apps.UsersConfig',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+
+>>>>>>> 3a1d8b8 (Feature: Added signup and login functionality)
 ]
 
 MIDDLEWARE = [
@@ -68,7 +93,47 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+<<<<<<< HEAD
 ROOT_URLCONF = "config.urls"
+=======
+# Authentication Backends
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'users.backends.EmailorUsernameModelBackend',
+)
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES':[
+        'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
+    'DEFAULT_FILTER_BACKENDS': 'django_filters.rest_framework.DjangoFilterBackend',
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'SEARCH_PARAM': 'filter[search]',
+    'TEST_REQUEST_RENDERER_CLASSES': [
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer'
+    ],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'multipart',
+
+}
+
+ROOT_URLCONF = 'config.urls'
+>>>>>>> 3a1d8b8 (Feature: Added signup and login functionality)
 
 TEMPLATES = [
     {
@@ -102,6 +167,10 @@ DATABASES = {
         },
     }
 }
+
+# AUTH USER MODEL 
+
+AUTH_USER_MODEL = 'users.UserAccount'
 
 
 # Password validation
