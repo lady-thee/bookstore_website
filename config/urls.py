@@ -19,9 +19,14 @@ from django.urls import include, path
 
 urlpatterns = [
 <<<<<<< HEAD
+<<<<<<< HEAD
     path("admin/", admin.site.urls),
 =======
     path('admin/', admin.site.urls),
     path('', include('users.urls')),
 >>>>>>> 3a1d8b8 (Feature: Added signup and login functionality)
+=======
+    path("admin/", admin.site.urls),
+    path("", include("users.urls")),
+>>>>>>> d2e0dc0 (Feature: Added signup and login functionality)
 ]
