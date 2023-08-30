@@ -30,6 +30,12 @@ print(hash(p))
    "password": "2030"
 }
 
+{
+   "old_passwordl": "2030",
+   "new_password": "apple",
+   "confirm_password": "apple"
+}
+
 # {"username_or_email": "theolam6@gmail.com", "password": "2030"}
 
   # path("", include(create_router.urls)),
@@ -145,4 +151,34 @@ print(hash(p))
 #             }, status.HTTP_400_BAD_REQUEST)
     
         
-        
+# def login_user(sender, request, user, **kwargs):
+
+
+# user_login.connect(login_user, sender=settings.AUTH_USER_MODEL)
+# @receiver(user_created, sender=settings.AUTH_USER_MODEL)
+# def send_welcome_mail(sender, instance, created, **kwargs):
+#     if created:
+#         subject = 'Welcome to Ikenga'
+#         body = render_to_string(
+#             'welcome.html',
+#             {
+#                 'user': instance,
+#             }
+#         )
+#         email = EmailMessage(
+#             subject= subject,
+#             body=body,
+#             from_email=settings.EMAIL_HOST_USER,
+#             to=[instance.email]
+#         )
+#         email.content_subtype = 'html'
+#         email.send()
+
+# welcome_email.connect(send_welcome_mail, sender=settings.AUTH_USER_MODEL)
+
+# request.auth.delete()
+# request.session.flush()
+
+# create_router.register(r"create", CreateUserView, basename="create")
+# login_router.register(r"", LoginUserView, basename="login")
+# reset_router.register(r"reset", UpdatePasswordView, basename='reset-password')

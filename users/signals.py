@@ -29,30 +29,3 @@ user_created.connect(generate_token, sender=settings.AUTH_USER_MODEL)
 
 
 
-# def login_user(sender, request, user, **kwargs):
-
-
-# user_login.connect(login_user, sender=settings.AUTH_USER_MODEL)
-# @receiver(user_created, sender=settings.AUTH_USER_MODEL)
-# def send_welcome_mail(sender, instance, created, **kwargs):
-#     if created:
-#         subject = 'Welcome to Ikenga'
-#         body = render_to_string(
-#             'welcome.html',
-#             {
-#                 'user': instance,
-#             }
-#         )
-#         email = EmailMessage(
-#             subject= subject,
-#             body=body,
-#             from_email=settings.EMAIL_HOST_USER,
-#             to=[instance.email]
-#         )
-#         email.content_subtype = 'html'
-#         email.send()
-
-# welcome_email.connect(send_welcome_mail, sender=settings.AUTH_USER_MODEL)
-
-# request.auth.delete()
-# request.session.flush()

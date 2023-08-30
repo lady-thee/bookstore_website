@@ -44,10 +44,10 @@ class LoginSerializer(serializers.Serializer):
         fields = ['username_or_email', 'password']
         
 
-class ResetPasswordSerializer(serializers.ModelSerializer):
+class ResetPasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
-
+    confirm_password = serializers.CharField(required=True)
     class Meta:
-       fields = ['']
+       fields = ['old_password', 'new_password', 'confirm_password']
         

@@ -19,10 +19,9 @@ from .signals import user_created
 
 
 class UserViewset(viewsets.ViewSet):
-    permission_classes = [AllowAny]
-
+    permission_classes = [AllowAny,]
+    
     def list(self, request):
-        print(request.user)
         queryset = UserAccount.objects.all()
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -53,14 +52,13 @@ def createView(request):
 @permission_classes([AllowAny,])
 def loginView(request):
     if request.method == 'POST':
-        logging.debug('Requests: %s', request.data)
+        # logging.debug('Requests: %s', request.data)
         serializer = LoginSerializer(data=request.data, many=False)
 
         try:
             if serializer.is_valid():
                 username_or_email = serializer.validated_data.get('username_or_email')
                 password = serializer.validated_data.get('password')
-                print(username_or_email, password)
                 if username_or_email is None or password is None:
                     raise AuthenticationFailed('Username or Email and Password required!')
                 else:
@@ -72,14 +70,14 @@ def loginView(request):
                      if user is not None:
                         login(request, user)
                         token, _ = Token.objects.get_or_create(user=user)
-                        return Response({'token': str(token.key), 
-                                        'message': f'{request.user.username} logged in successfully'},
+                        return Response({'token': str(token.key),
+                                         'message': f'{request.user.username} logged in successfully'},
                                         status.HTTP_200_OK)
                         # user_login.send(sender=settings.AUTH_USER_MODEL, request=request, user=request.user)
                      else:
-                         print(user)
                          raise AuthenticationFailed("Invalid details")
-                    
+            else:
+                return Response({'error':serializer.errors },status.HTTP_400_BAD_REQUEST)  
         except Exception as e:
             raise AuthenticationFailed('Invalid credentials', str(e))
     return Response({'message':'This endpoint handles the authentication of created users.'}, status.HTTP_200_OK)
@@ -95,18 +93,40 @@ def user_logout(request):
         try:
             Token.objects.filter(user=request.user).delete()
             logout(request)
-            return Response({
-                'message': 'Successfully logged out!'
-            }, status.HTTP_200_OK)
+            return Response({'message': 'Successfully logged out!'}, status.HTTP_200_OK)
         except Exception as e:
-            return Response({
-                'message': str(e)
-            }, status.HTTP_200_OK)
+            return Response({'message': str(e)}, status.HTTP_200_OK)
 
     return Response({'message': 'This endpoint handles logout integration'})
 
-class ResetPasswordView():
-    pass
+
+
+@login_required
+@csrf_exempt
+@api_view(['GET', 'POST'])
+@authentication_classes([TokenAuthentication, SessionAuthentication,])
+@permission_classes([IsAuthenticated,])
+def resetPasswordView(request):
+    if request.method == 'POST':
+        serializer = ResetPasswordSerializer(data=request.data)
+        user = request.user
+        if serializer.is_valid():
+            old_password = serializer.validated_data.get('old_password')
+            new_password = serializer.validated_data.get('new_password')
+            confirm_password = serializer.validated_data.get('confirm_password')
+            if not user.check_password(old_password):
+                return Response({'message': 'Incorrect password'}, status.HTTP_404_NOT_FOUND)
+            else:
+                if new_password == confirm_password:
+                    user.set_password(new_password)
+                    user.save()
+                    return Response({'message': 'Password reset successful!'}, status.HTTP_202_ACCEPTED)
+                else:
+                    return Response({'message': 'Passwords mismatch!'})
+        else:
+            return Response({'error': serializer.errors}, status.HTTP_400_BAD_REQUEST)
+        
+    return Response({'message': 'This endpoint handles the reset password integration'})
 
 
 
