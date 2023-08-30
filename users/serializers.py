@@ -41,13 +41,13 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
 
     class Meta:
-        fields = ['username_or_email', 'password']
-        
+        fields = ["username_or_email", "password"]
+
 
 class ResetPasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
     confirm_password = serializers.CharField(required=True)
+
     class Meta:
-       fields = ['old_password', 'new_password', 'confirm_password']
-        
+        fields = ["old_password", "new_password", "confirm_password"]

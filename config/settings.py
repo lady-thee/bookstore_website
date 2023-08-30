@@ -55,9 +55,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    
     "users.apps.UsersConfig",
-
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
@@ -117,7 +115,7 @@ REST_FRAMEWORK = {
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR, 'users/templates'],
+        "DIRS": [BASE_DIR, "users/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -170,17 +168,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# EMAIL BACKENDS 
+# EMAIL BACKENDS
 
 # EMAIL_HOST = 'smtp.gmail.com'
 # EMAIL_HOST_USER = 'webservices135@gmail.com'
 # EMAIL_HOST_PASSWORD = 'xunbkfvfdctjteyf'
 # EMAIL_PORT = 587
-# EMAIL_USE_TLS = True 
-# EMAIL_USE_SSL = False  
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
 # EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
 # DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
 
 
 # Internationalization

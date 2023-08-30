@@ -28,10 +28,8 @@ class EmailorUsernameModelBackend(ModelBackend):
 
         if user.check_password(password):
             return user
-        
-        return None
 
-       
+        return None
 
 
 # class EmailOrUsernameModelBackend(ModelBackend):
