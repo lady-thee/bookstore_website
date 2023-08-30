@@ -16,7 +16,9 @@ class UserManager(BaseUserManager):
         kwargs.setdefault("is_superuser", False)
         kwargs.setdefault("is_staff", False)
 
-        user = self.model(email=self.normalize_email(email),username=username, **kwargs)
+        user = self.model(
+            email=self.normalize_email(email), username=username, **kwargs
+        )
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -29,7 +31,9 @@ class UserManager(BaseUserManager):
         kwargs.setdefault("is_verified", True)
         kwargs.setdefault("is_staff", True)
 
-        superuser = self.model(email=self.normalize_email(email), username=username, **kwargs)
+        superuser = self.model(
+            email=self.normalize_email(email), username=username, **kwargs
+        )
         superuser.set_password(password)
         superuser.save(using=self._db)
         return superuser
