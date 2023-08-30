@@ -5,31 +5,31 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from django.core.exceptions import FieldError
 from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password, **kwargs):
+    def create_user(self, email, username, password, **kwargs):
         if not email:
             raise ValueError("Email must be given!")
         kwargs.setdefault("is_active", True)
         kwargs.setdefault("is_superuser", False)
         kwargs.setdefault("is_staff", False)
 
-        user = self.model(email=self.normalize_email(email), **kwargs)
+        user = self.model(email=self.normalize_email(email),username=username, **kwargs)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password, **kwargs):
+    def create_superuser(self, email, username, password, **kwargs):
         if not email:
             raise ValueError("Email must be given!")
         kwargs.setdefault("is_active", True)
         kwargs.setdefault("is_superuser", True)
+        kwargs.setdefault("is_verified", True)
         kwargs.setdefault("is_staff", True)
 
-        superuser = self.model(email=self.normalize_email(email), **kwargs)
+        superuser = self.model(email=self.normalize_email(email), username=username, **kwargs)
         superuser.set_password(password)
         superuser.save(using=self._db)
         return superuser

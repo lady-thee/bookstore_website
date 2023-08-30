@@ -36,10 +36,18 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-#     {
-#    "email": "theolam6@gmail.com",
-#     "password": "2030",
-#     "username": "theola"
-# }
+class LoginSerializer(serializers.Serializer):
+    username_or_email = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
 
-# {"username_or_email": "theolam6@gmail.com", "password": "2030"}
+    class Meta:
+        fields = ['username_or_email', 'password']
+        
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    class Meta:
+       fields = ['']
+        
