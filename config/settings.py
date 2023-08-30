@@ -55,7 +55,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    
     "users.apps.UsersConfig",
+
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
@@ -94,9 +96,11 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_CONTENT_NEGOTIATION_CLASS": "rest_framework.negotiation.DefaultContentNegotiation",
     "DEFAULT_FILTER_BACKENDS": "django_filters.rest_framework.DjangoFilterBackend",
@@ -113,7 +117,7 @@ REST_FRAMEWORK = {
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR, 'users/templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -165,6 +169,18 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+# EMAIL BACKENDS 
+
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = 'webservices135@gmail.com'
+# EMAIL_HOST_PASSWORD = 'xunbkfvfdctjteyf'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True 
+# EMAIL_USE_SSL = False  
+# EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 
 # Internationalization

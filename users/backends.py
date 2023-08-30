@@ -11,26 +11,27 @@ class EmailorUsernameModelBackend(ModelBackend):
     def authenticate(
         self,
         request: HttpRequest,
-        username: str | None = ...,
-        password: str | None = ...,
+        username: str | None,
+        password: str | None,
         **kwargs: Any
     ) -> AbstractBaseUser | None:
-        user_model = get_user_model()
+        UserModel = get_user_model()
 
         if username is None:
-            username = kwargs.get(user_model.USERNAME_FIELD)
+            username = kwargs.get(UserModel.USERNAME_FIELD)
+        try:
+            user = UserModel.objects.get(
+                Q(username__iexact=username) | Q(email__iexact=username)
+            )
+        except UserModel.DoesNotExist:
+            return None
 
-        users = user_model._default_manager.filter(
-            Q(**{user_model.USERNAME_FIELD: username}) | Q(email__iexact=username)
-        )
+        if user.check_password(password):
+            return user
+        
+        return None
 
-        for user in users:
-            if user.check_password(password):
-                return user
-        if not users:
-            user_model().set_password(password)
-
-        return super().authenticate(request, username, password, **kwargs)
+       
 
 
 # class EmailOrUsernameModelBackend(ModelBackend):
