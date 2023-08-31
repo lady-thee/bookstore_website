@@ -21,15 +21,12 @@ from .serializers import LoginSerializer, ResetPasswordSerializer, UserSerialize
 from .signals import user_created
 
 
-class UserViewset(viewsets.ViewSet):
-    permission_classes = [
-        AllowAny,
-    ]
-
-    def list(self, request):
-        queryset = UserAccount.objects.all()
-        serializer = UserSerializer(queryset, many=True)
-        return Response(serializer.data)
+@api_view(['GET'])
+@permission_classes([AllowAny,])
+def listAllUsers( request):
+    queryset = UserAccount.objects.all()
+    serializer = UserSerializer(queryset, many=True)
+    return Response(serializer.data)
 
 
 @csrf_exempt
@@ -183,3 +180,18 @@ def resetPasswordView(request):
             return Response({"error": serializer.errors}, status.HTTP_400_BAD_REQUEST)
 
     return Response({"message": "This endpoint handles the reset password integration"})
+
+
+@login_required
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def retrieveUserAccountView(request):
+    user = request.user 
+    account = {
+        'id': user.id,
+        'email': user.email,
+        'username': user.username
+    }
+    return Response(account, status.HTTP_200_OK)
+
+        
