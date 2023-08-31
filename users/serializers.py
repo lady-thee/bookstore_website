@@ -35,6 +35,13 @@ class UserSerializer(serializers.ModelSerializer):
         user = UserAccount.objects.create_user(**validated_data)
         return user
 
+    # def update(self, instance, validated_data):
+    #     instance.email = validated_data.get('new_email', instance.email)
+    #     instance.username = validated_data.get('new_username', instance.username)
+
+    #     instance.save()
+    #     return instance 
+
 
 class LoginSerializer(serializers.Serializer):
     username_or_email = serializers.CharField(required=True)
@@ -51,3 +58,17 @@ class ResetPasswordSerializer(serializers.Serializer):
 
     class Meta:
         fields = ["old_password", "new_password", "confirm_password"]
+
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    new_email = serializers.CharField(required=True)
+    new_username = serializers.CharField(required=True)
+    class Meta:
+        model = UserAccount
+        fields = ['new_email', 'new_username']
+    
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get('new_username', instance.username)
+        instance.email = validated_data.get('new_email', instance.email)
+        instance.save()
+        return instance
