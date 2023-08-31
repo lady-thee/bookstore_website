@@ -21,9 +21,13 @@ from .serializers import LoginSerializer, ResetPasswordSerializer, UserSerialize
 from .signals import user_created
 
 
-@api_view(['GET'])
-@permission_classes([AllowAny,])
-def listAllUsers( request):
+@api_view(["GET"])
+@permission_classes(
+    [
+        AllowAny,
+    ]
+)
+def listAllUsers(request):
     queryset = UserAccount.objects.all()
     serializer = UserSerializer(queryset, many=True)
     return Response(serializer.data)
@@ -183,15 +187,9 @@ def resetPasswordView(request):
 
 
 @login_required
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def retrieveUserAccountView(request):
-    user = request.user 
-    account = {
-        'id': user.id,
-        'email': user.email,
-        'username': user.username
-    }
+    user = request.user
+    account = {"id": user.id, "email": user.email, "username": user.username}
     return Response(account, status.HTTP_200_OK)
-
-        
