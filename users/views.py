@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import (
@@ -17,7 +17,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .models import UserAccount
-from .serializers import LoginSerializer, ResetPasswordSerializer, UserSerializer
+from .serializers import LoginSerializer, ResetPasswordSerializer,UpdateUserSerializer, UserSerializer
 from .signals import user_created
 
 
@@ -193,3 +193,22 @@ def retrieveUserAccountView(request):
     user = request.user
     account = {"id": user.id, "email": user.email, "username": user.username}
     return Response(account, status.HTTP_200_OK)
+
+
+@login_required
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def updateUserInformation(request):
+    user = request.user 
+    serializer = UpdateUserSerializer(user, data=request.data)
+    if request.method == 'PUT':
+        if serializer.is_valid():
+            print(user)
+
+            serializer.save()
+
+            return Response({'message': 'Details successfully updated'}, status.HTTP_202_ACCEPTED)
+        else:
+            return Response({'message': serializer.errors})
+    
+    return Response({'message': 'This endpoint handles updating user information'}, status.HTTP_200_OK)

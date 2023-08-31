@@ -19,7 +19,10 @@ print(hash(p))
     "password": "2030",
     "username": "theola"
 }
-
+{
+    "email": "twinklet969@gmail.com",
+    "username": "twinkle"
+}
 {
   "username_or_email": "theolam6@gmail.com",
   "password": "2030"
