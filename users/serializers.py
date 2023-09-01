@@ -61,14 +61,12 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 
 class UpdateUserSerializer(serializers.ModelSerializer):
-    new_email = serializers.CharField(required=True)
     new_username = serializers.CharField(required=True)
     class Meta:
         model = UserAccount
-        fields = ['new_email', 'new_username']
+        fields = ['new_username']
     
     def update(self, instance, validated_data):
         instance.username = validated_data.get('new_username', instance.username)
-        instance.email = validated_data.get('new_email', instance.email)
         instance.save()
         return instance
