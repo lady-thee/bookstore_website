@@ -203,7 +203,7 @@ def updateUserInformation(request):
     serializer = UpdateUserSerializer(user, data=request.data)
     if request.method == 'PUT':
         if serializer.is_valid():
-            print(user)
+            # print(user)
 
             serializer.save()
 
