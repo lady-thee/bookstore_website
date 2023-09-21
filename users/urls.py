@@ -16,6 +16,6 @@ urlpatterns = [
     path("login/", loginView, name="login"),
     path("logout/", user_logout, name="logout"),
     path("reset-password/", resetPasswordView, name="reset-password"),
-    path("account/", retrieveUserAccountView),
-    path("update/", updateUserInformation, name="update")
+    path("account/", retrieveUserAccountView, name='account'),
+    path("update/", updateUserInformation, name="update"),
 ]

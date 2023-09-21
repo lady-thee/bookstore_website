@@ -40,7 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
     #     instance.username = validated_data.get('new_username', instance.username)
 
     #     instance.save()
-    #     return instance 
+    #     return instance
 
 
 class LoginSerializer(serializers.Serializer):
@@ -62,11 +62,12 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 class UpdateUserSerializer(serializers.ModelSerializer):
     new_username = serializers.CharField(required=True)
+
     class Meta:
         model = UserAccount
-        fields = ['new_username']
-    
+        fields = ["new_username"]
+
     def update(self, instance, validated_data):
-        instance.username = validated_data.get('new_username', instance.username)
+        instance.username = validated_data.get("new_username", instance.username)
         instance.save()
         return instance

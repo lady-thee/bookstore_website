@@ -17,7 +17,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .models import UserAccount
-from .serializers import LoginSerializer, ResetPasswordSerializer,UpdateUserSerializer, UserSerializer
+from .serializers import (
+    LoginSerializer,
+    ResetPasswordSerializer,
+    UpdateUserSerializer,
+    UserSerializer,
+)
 from .signals import user_created
 
 
@@ -63,8 +68,7 @@ def createView(request):
             return Response(
                 {"error": str(e)}, serializer.errors, status.HTTP_400_BAD_REQUEST
             )
-
-    return Response({"message": "This endpoint handles the creation of users"})
+    return Response({"message": "This endpoint handles the creation of users"}, status.HTTP_200_OK)
 
 
 @csrf_exempt
@@ -109,7 +113,7 @@ def loginView(request):
                         return Response(
                             {
                                 "token": str(token.key),
-                                "message": f"{request.user.username} logged in successfully",
+                                "message": f"{request.user.username} logged in successfully!",
                             },
                             status.HTTP_200_OK,
                         )
@@ -146,7 +150,7 @@ def user_logout(request):
 
 @login_required
 @csrf_exempt
-@api_view(["GET", "POST"])
+@api_view(["GET", "PUT"])
 @authentication_classes(
     [
         TokenAuthentication,
@@ -159,7 +163,7 @@ def user_logout(request):
     ]
 )
 def resetPasswordView(request):
-    if request.method == "POST":
+    if request.method == "PUT":
         serializer = ResetPasswordSerializer(data=request.data)
         user = request.user
         if serializer.is_valid():
@@ -192,23 +196,28 @@ def resetPasswordView(request):
 def retrieveUserAccountView(request):
     user = request.user
     account = {"id": user.id, "email": user.email, "username": user.username}
-    return Response(account, status.HTTP_200_OK)
+    return Response({'account': account}, status.HTTP_200_OK)
 
 
 @login_required
-@api_view(['GET', 'PUT'])
+@api_view(["GET", "PUT"])
 @permission_classes([IsAuthenticated])
 def updateUserInformation(request):
-    user = request.user 
+    user = request.user
     serializer = UpdateUserSerializer(user, data=request.data)
-    if request.method == 'PUT':
+    if request.method == "PUT":
         if serializer.is_valid():
             # print(user)
 
             serializer.save()
 
-            return Response({'message': 'Details successfully updated'}, status.HTTP_202_ACCEPTED)
+            return Response(
+                {"message": "Details successfully updated!"}, status.HTTP_202_ACCEPTED
+            )
         else:
-            return Response({'message': serializer.errors})
-    
-    return Response({'message': 'This endpoint handles updating user information'}, status.HTTP_200_OK)
+            return Response({"message": serializer.errors})
+
+    return Response(
+        {"message": "This endpoint handles updating user information"},
+        status.HTTP_200_OK,
+    )
