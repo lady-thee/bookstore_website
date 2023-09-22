@@ -68,7 +68,9 @@ def createView(request):
             return Response(
                 {"error": str(e)}, serializer.errors, status.HTTP_400_BAD_REQUEST
             )
-    return Response({"message": "This endpoint handles the creation of users"}, status.HTTP_200_OK)
+    return Response(
+        {"message": "This endpoint handles the creation of users"}, status.HTTP_200_OK
+    )
 
 
 @csrf_exempt
@@ -196,7 +198,7 @@ def resetPasswordView(request):
 def retrieveUserAccountView(request):
     user = request.user
     account = {"id": user.id, "email": user.email, "username": user.username}
-    return Response({'account': account}, status.HTTP_200_OK)
+    return Response({"account": account}, status.HTTP_200_OK)
 
 
 @login_required
