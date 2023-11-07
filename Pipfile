@@ -5,16 +5,17 @@ name = "pypi"
 
 [packages]
 django = "*"
-djangorestframework = "*"
-psycopg2-binary = "*"
+psycopg = "*"
+psycopg-binary = "*"
 dj-database-url = "*"
 pydantic = "*"
 pydantic-settings = "*"
 pillow = "*"
 six = "*"
 django-filter = "*"
+djangorestframework = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
+python_version = "3.12"

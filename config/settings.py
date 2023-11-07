@@ -76,10 +76,10 @@ ROOT_URLCONF = "config.urls"
 
 # Authentication Backends
 
-AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
+AUTHENTICATION_BACKENDS = [
     "users.backends.EmailorUsernameModelBackend",
-)
+    "django.contrib.auth.backends.ModelBackend",
+]
 
 
 REST_FRAMEWORK = {
@@ -99,6 +99,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
         "rest_framework.permissions.IsAuthenticated",
+        'rest_framework.permissions.IsAdminUser',
     ],
     "DEFAULT_CONTENT_NEGOTIATION_CLASS": "rest_framework.negotiation.DefaultContentNegotiation",
     "DEFAULT_FILTER_BACKENDS": "django_filters.rest_framework.DjangoFilterBackend",
@@ -110,6 +111,24 @@ REST_FRAMEWORK = {
     ],
     "TEST_REQUEST_DEFAULT_FORMAT": "multipart",
 }
+
+# settings.py
+
+# Use the database as the session engine
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# Set the session cookie name
+SESSION_COOKIE_NAME = 'my_session_cookie'
+
+# Set the session duration to 2 hours (in seconds)
+SESSION_COOKIE_AGE = 7200
+
+# Set the session cookie to be secure (only sent over HTTPS)
+SESSION_COOKIE_SECURE = True
+
+# Make the session expire when the browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 
 
 TEMPLATES = [
@@ -147,7 +166,7 @@ DATABASES = {
 
 # AUTH USER MODEL
 
-AUTH_USER_MODEL = "users.UserAccount"
+AUTH_USER_MODEL = "users.Account"
 
 
 # Password validation
@@ -156,9 +175,23 @@ AUTH_USER_MODEL = "users.UserAccount"
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        'OPTIONS': {
+         'max_similarity': 0.7,
+         'user_attributes': ("username", "first_name", "last_name", "email")
+      }
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        'OPTIONS': {
+            'min_length': 8,
+        },
+    },
+    {
+        "NAME": "users.validators.UppercaseLetterValidator",
+    },
+    {
+        'NAME': 'users.validators.SpecialCharValidator',
+        
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
@@ -167,6 +200,36 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+
+# Password Validators
+
+# AUTH_PASSWORD_VALIDATORS = [
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+#         'OPTIONS': {
+#             'min_length': 8,
+#         },
+#     },
+#     # {
+#     #     'NAME': 'users.validators.UppercaseLetterValidator',
+#     #     'OPTIONS': {
+#     #         'min_count': 1,
+#     #     },
+#     # },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    
+#     },
+#     # {
+#     #     'NAME': 'users.validators.SpecialCharactersValidator',
+#     #     'OPTIONS': {
+#     #         'min_count': 1,
+#     #     }
+#     # },
+# ]
+
+
 
 # EMAIL BACKENDS
 

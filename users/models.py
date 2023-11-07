@@ -1,11 +1,7 @@
 import uuid
-
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
+from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.db import models
+from django.urls import reverse
 
 
 class UserManager(BaseUserManager):
@@ -39,7 +35,7 @@ class UserManager(BaseUserManager):
         return superuser
 
 
-class UserAccount(AbstractBaseUser, PermissionsMixin):
+class Account(AbstractUser):
     id = models.UUIDField(
         default=uuid.uuid4, editable=False, unique=True, primary_key=True
     )
@@ -50,6 +46,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    date_joined = None
     created_time = models.DateTimeField(auto_now_add=True, null=False)
     last_login = models.DateTimeField(auto_now=True)
 
@@ -61,14 +58,14 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    def get_absolute_url(self):
+        return reverse("user_detail", kwargs={"pk": self.pk})
+    
+    def get_update_url(self):
+        return reverse("users:user_update", kwargs={"pk": self.pk})
+    
+    def get_delete_url(self):
+        return reverse("users:user_delete", kwargs={"pk": self.pk})
+    
     def __str__(self) -> str:
-        return self.email
-
-    def has_perms(self, perm, obj=None):
-        return self.is_superuser
-
-    def get_full_name(self) -> str:
-        return self.username
-
-    def has_module_perms(self, app_label):
-        return True
+        return f'{self.email}'

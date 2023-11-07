@@ -1,4 +1,7 @@
 from django.apps import AppConfig
+from django.conf import settings
+from django.db.models.signals import post_save
+
 
 
 class UsersConfig(AppConfig):
@@ -7,9 +10,8 @@ class UsersConfig(AppConfig):
 
     def ready(self) -> None:
         super().ready()
-        from django.conf import settings
-        from django.db.models.signals import post_save
-
-        from users.signals import generate_token
-
-        post_save.connect(generate_token, sender=settings.AUTH_USER_MODEL)
+        from users import signals
+        
+    # def ready(self) -> None:
+    #     super().ready()
+    #     post_save.connect(signals.generate_token, sender=settings.AUTH_USER_MODEL)

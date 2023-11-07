@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import UserAccount
+from users.models import Account
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -20,4 +20,4 @@ class UserAdmin(admin.ModelAdmin):
     list_display_links = ["email"]
 
 
-admin.site.register(UserAccount, UserAdmin)
+admin.site.register(Account, UserAdmin)
