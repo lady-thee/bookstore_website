@@ -1,5 +1,6 @@
 import uuid
-from django.contrib.auth.models import BaseUserManager, AbstractUser
+
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.urls import reverse
 
@@ -60,12 +61,12 @@ class Account(AbstractUser):
 
     def get_absolute_url(self):
         return reverse("user_detail", kwargs={"pk": self.pk})
-    
+
     def get_update_url(self):
         return reverse("users:user_update", kwargs={"pk": self.pk})
-    
+
     def get_delete_url(self):
         return reverse("users:user_delete", kwargs={"pk": self.pk})
-    
+
     def __str__(self) -> str:
-        return f'{self.email}'
+        return f"{self.email}"

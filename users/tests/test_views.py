@@ -49,22 +49,27 @@ class LoginAPISTestcase(APITestCase):
         self.user = Account.objects.create_user(**self.data)
         self.token, _ = Token.objects.get_or_create(user=self.user)
 
-        self.acesstoken = self.client.post(reverse("users:register"), self.data, format="json")
+        self.acesstoken = self.client.post(
+            reverse("users:register"), self.data, format="json"
+        )
 
     def test_login_user(self):
         url = reverse("users:login")
 
-        login_data = {"username_or_email": "janedoe@gmail.com", "password": "Password@123"}
+        login_data = {
+            "username_or_email": "janedoe@gmail.com",
+            "password": "Password@123",
+        }
 
         access_token_response = self.client.post(url, login_data)
         access_token_data = access_token_response.json()
-        print(access_token_data )
+        print(access_token_data)
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token_data}")
 
         self.assertEqual(
-            access_token_data.get('message'),
+            access_token_data.get("message"),
             # f"{self.user.username} logged in successfully!",
-            "User Logged in Successfully!"
+            "User Logged in Successfully!",
         )
         self.assertTrue(status.HTTP_200_OK)
         self.assertIn("token", access_token_data)
@@ -84,11 +89,13 @@ class AuthenticateRequiredAPIViewsTestcase(APITestCase):
         self.user = Account.objects.create_user(**self.data)
         token = Token.objects.get_or_create(user=self.user)
 
-
         """
          login requirement
         """
-        self.login_data = {"username_or_email": "janedoe@gmail.com", "password": "Password@123"}
+        self.login_data = {
+            "username_or_email": "janedoe@gmail.com",
+            "password": "Password@123",
+        }
 
         self.access_token = self.client.post(
             reverse("users:login"), self.login_data, format="json"
@@ -107,7 +114,7 @@ class AuthenticateRequiredAPIViewsTestcase(APITestCase):
         response = self.client.get(url)
         response_data = response.json()
         # print(response_data)
-      
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response_data["email"], self.data["email"])
         self.assertEqual(response_data["username"], self.data["username"])
@@ -158,9 +165,8 @@ class AuthenticateRequiredAPIViewsTestcase(APITestCase):
         print(response_data)
 
     def test_delete_user(self):
-        url = reverse('users:account_settings')
-        
-        response = self.client.delete(url, format='json')
-       
+        url = reverse("users:account_settings")
+
+        response = self.client.delete(url, format="json")
+
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        
