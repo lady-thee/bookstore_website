@@ -23,7 +23,7 @@ sell books and other users can buy, therefore easily connecting users to booksto
 7. Pipenv (Virtual environment)
 
 # Database Schematics
-https://drawsql.app/teams/the-a-team-9/diagrams/bookstore-ikenga
+[https://drawsql.app/teams/the-a-team-9/diagrams/bookstore-ikenga]
 
 # Contributors
 lord-sarcastic

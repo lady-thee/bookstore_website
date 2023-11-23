@@ -1,139 +1,89 @@
-import logging
-
-from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from django.contrib.auth import login, logout, authenticate
+from rest_framework import generics, status
+from rest_framework.authentication import  TokenAuthentication
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import (
-    api_view,
-    authentication_classes,
-    permission_classes,
-)
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .models import UserAccount
-from .serializers import LoginSerializer, ResetPasswordSerializer,UpdateUserSerializer, UserSerializer
-from .signals import user_created
+from users.backends import EmailorUsernameModelBackend
+from users.models import Account
 
-
-@api_view(["GET"])
-@permission_classes(
-    [
-        AllowAny,
-    ]
+from users.serializers import (
+    AccountSettingsSerializer,
+    ListAccountsSerializer,
+    LoginSerializer,
+    ResetPasswordSerializer,
+    UserSerializer,
 )
-def listAllUsers(request):
-    queryset = UserAccount.objects.all()
-    serializer = UserSerializer(queryset, many=True)
-    return Response(serializer.data)
+from users.signals import user_created
+
+"""API endpoints using Class Base Views"""
 
 
-@csrf_exempt
-@api_view(["GET", "POST"])
-@permission_classes(
-    [
-        AllowAny,
-    ]
-)
-def createView(request):
-    if request.method == "POST":
-        serializer = UserSerializer(data=request.data)
+class ListAllAccountAPIView(generics.ListAPIView):
+    queryset = Account.objects.all()
+    serializer_class = ListAccountsSerializer
+    filter_backends = [SearchFilter, OrderingFilter]
+    permission_classes = [IsAdminUser]
 
-        try:
-            if serializer.is_valid():
-                serializer.save()
-                user_created.send(
-                    sender=settings.AUTH_USER_MODEL,
-                    instance=serializer.instance,
-                    created=True,
-                )
-                return Response(
-                    {
-                        "message": "User successfully created!",
-                        "token": str(serializer.instance.auth_token.key),
-                    },
-                    status.HTTP_201_CREATED,
-                )
-        except Exception as e:
+
+class AccountRegistrationAPIView(generics.CreateAPIView):
+    queryset = Account.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+    filter_backends = [SearchFilter, OrderingFilter]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.create(serializer.validated_data)
+        user_created.send(sender=user.__class__, instance=user)
+        return Response(
+            {
+                "message": "User Created Successfully!",
+                "account": UserSerializer(user).data,
+            },
+            status.HTTP_201_CREATED,
+        )
+
+
+class AccountLoginAPIView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = [TokenAuthentication]
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        user = EmailorUsernameModelBackend().authenticate(
+            request, 
+            username=data.get('username_or_email'),
+            password=data.get('password')
+        )
+        
+        if user:
+            login(request, user, backend="users.backends.EmailorUsernameModelBackend")
+
+            token, _ = Token.objects.get_or_create(user=user)
             return Response(
-                {"error": str(e)}, serializer.errors, status.HTTP_400_BAD_REQUEST
+                {"message": "User Logged in Successfully!", "token": token.key},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"message": "Invalid Credentials"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-    return Response({"message": "This endpoint handles the creation of users"})
 
+class AccountLogoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
-@csrf_exempt
-@api_view(["GET", "POST"])
-@authentication_classes(
-    [
-        TokenAuthentication,
-        SessionAuthentication,
-    ]
-)
-@permission_classes(
-    [
-        AllowAny,
-    ]
-)
-def loginView(request):
-    if request.method == "POST":
-        # logging.debug('Requests: %s', request.data)
-        serializer = LoginSerializer(data=request.data, many=False)
-
-        try:
-            if serializer.is_valid():
-                username_or_email = serializer.validated_data.get("username_or_email")
-                password = serializer.validated_data.get("password")
-                if username_or_email is None or password is None:
-                    raise AuthenticationFailed(
-                        "Username or Email and Password required!"
-                    )
-                else:
-                    sym = "@"
-                    if sym in username_or_email:
-                        user = authenticate(
-                            request, email=username_or_email, password=password
-                        )
-                    else:
-                        user = authenticate(
-                            request, username=username_or_email, password=password
-                        )
-                    if user is not None:
-                        login(request, user)
-                        token, _ = Token.objects.get_or_create(user=user)
-                        return Response(
-                            {
-                                "token": str(token.key),
-                                "message": f"{request.user.username} logged in successfully",
-                            },
-                            status.HTTP_200_OK,
-                        )
-                        # user_login.send(sender=settings.AUTH_USER_MODEL, request=request, user=request.user)
-                    else:
-                        raise AuthenticationFailed("Invalid details")
-            else:
-                return Response(
-                    {"error": serializer.errors}, status.HTTP_400_BAD_REQUEST
-                )
-        except Exception as e:
-            raise AuthenticationFailed("Invalid credentials", str(e))
-    return Response(
-        {"message": "This endpoint handles the authentication of created users."},
-        status.HTTP_200_OK,
-    )
-
-
-@login_required
-@api_view(["GET", "POST"])
-@authentication_classes([TokenAuthentication, SessionAuthentication])
-@permission_classes([IsAuthenticated])
-def user_logout(request):
-    if request.method == "POST":
+    def post(self, request):
         try:
             Token.objects.filter(user=request.user).delete()
             logout(request)
@@ -141,74 +91,70 @@ def user_logout(request):
         except Exception as e:
             return Response({"message": str(e)}, status.HTTP_200_OK)
 
-    return Response({"message": "This endpoint handles logout integration"})
+    # def get(self, request):
+    #     target_url = reverse('login')
+    #     return HttpResponseRedirect(target_url)
 
 
-@login_required
-@csrf_exempt
-@api_view(["GET", "POST"])
-@authentication_classes(
-    [
-        TokenAuthentication,
-        SessionAuthentication,
-    ]
-)
-@permission_classes(
-    [
-        IsAuthenticated,
-    ]
-)
-def resetPasswordView(request):
-    if request.method == "POST":
-        serializer = ResetPasswordSerializer(data=request.data)
-        user = request.user
-        if serializer.is_valid():
-            old_password = serializer.validated_data.get("old_password")
-            new_password = serializer.validated_data.get("new_password")
-            confirm_password = serializer.validated_data.get("confirm_password")
-            if not user.check_password(old_password):
-                return Response(
-                    {"message": "Incorrect password"}, status.HTTP_404_NOT_FOUND
-                )
-            else:
-                if new_password == confirm_password:
-                    user.set_password(new_password)
-                    user.save()
-                    return Response(
-                        {"message": "Password reset successful!"},
-                        status.HTTP_202_ACCEPTED,
-                    )
-                else:
-                    return Response({"message": "Passwords mismatch!"})
-        else:
-            return Response({"error": serializer.errors}, status.HTTP_400_BAD_REQUEST)
+class ResetPasswordAPIView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    serializer_class = ResetPasswordSerializer
 
-    return Response({"message": "This endpoint handles the reset password integration"})
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        if hasattr(user, "auth_token"):
+            user.auth_token.delete()
+        Token.objects.get_or_create(user=user)
+        return Response({"message": "Password Reset Successful!"}, status.HTTP_200_OK)
 
 
-@login_required
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def retrieveUserAccountView(request):
-    user = request.user
-    account = {"id": user.id, "email": user.email, "username": user.username}
-    return Response(account, status.HTTP_200_OK)
+class RetrieveAccountAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AccountSettingsSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Account.objects.all()
+    filter_backends = [SearchFilter, OrderingFilter]
 
+    def get_object(self):
+        if not self.request.user.is_authenticated:
+            return Response(
+                {"detail": "Authentication credentials were not provided."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        user_email = self.request.user.email
+        user_id = (
+            Account.objects.filter(email=user_email).values_list("id", flat=True).get()
+        )
+        obj = Account.objects.get(id=user_id)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
-@login_required
-@api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated])
-def updateUserInformation(request):
-    user = request.user 
-    serializer = UpdateUserSerializer(user, data=request.data)
-    if request.method == 'PUT':
-        if serializer.is_valid():
-            print(user)
+    def get(self, request, *args, **kwargs):
+        account = self.get_object()
+        serializer = self.get_serializer(account)
+        return Response(serializer.data, status.HTTP_200_OK)
 
-            serializer.save()
+    def update(self, request, *args, **kwargs):
+        account = self.get_object()
+        serializer = self.get_serializer(account, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"message": "Details Updated Successfully!", "detail": serializer.data},
+            status.HTTP_200_OK,
+        )
 
-            return Response({'message': 'Details successfully updated'}, status.HTTP_202_ACCEPTED)
-        else:
-            return Response({'message': serializer.errors})
-    
-    return Response({'message': 'This endpoint handles updating user information'}, status.HTTP_200_OK)
+    def delete(self, request, *args, **kwargs):
+        account = self.get_object()
+        account.delete()
+        return Response(
+            {"message": "Account Successfully Deleted!"}, status.HTTP_204_NO_CONTENT
+        )
